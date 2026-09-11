@@ -1,0 +1,91 @@
+/* ============================================
+   HERO SECTION STYLES
+   ============================================ */
+
+.hero {
+  position: relative;
+  width: 100%;
+  /* TIDAK pakai aspect-ratio atau fixed height —
+     biarkan gambar menentukan tingginya sendiri */
+  margin-top: 0; /* navbar melayang di atas, tidak perlu offset */
+  line-height: 0; /* hilangkan gap bawaan inline img */
+}
+
+/* bg-wrap mengikuti ukuran alami gambar */
+.hero__bg-wrap {
+  position: relative;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Gambar 100% lebar, tinggi OTOMATIS — tidak ada zoom, tidak ada crop */
+.hero__bg-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: unset; /* biarkan browser tampilkan natural */
+}
+
+.hero__overlay {
+  display: none;
+}
+
+/* Konten overlay (siap dipakai jika perlu teks di depan gambar) */
+.hero__content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5% 5%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero__headline {
+  /* Tersembunyi — teks sudah ada di dalam gambar */
+  display: none;
+}
+
+/* Siap digunakan jika nanti perlu teks overlay */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero__subtitle-line {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(32px, 5.5vw, 64px);
+  color: #FFFFFF;
+  text-shadow:
+    -4px -4px 0 #2A8E36,
+     4px -4px 0 #2A8E36,
+    -4px  4px 0 #2A8E36,
+     4px  4px 0 #2A8E36,
+    -4px  0   0 #2A8E36,
+     4px  0   0 #2A8E36,
+     0   -4px 0 #2A8E36,
+     0    4px 0 #2A8E36;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  margin-bottom: 0;
+}
+
+.hero__title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(56px, 11vw, 130px);
+  line-height: 0.95;
+  background: linear-gradient(90deg, #D0021B 0%, #E8302A 20%, #FF6B2B 40%, #FFD31D 60%, #7AC943 80%, #3DB54A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter:
+    drop-shadow(-3px -3px 0px #1A6B28)
+    drop-shadow( 3px -3px 0px #1A6B28)
+    drop-shadow(-3px  3px 0px #1A6B28)
+    drop-shadow( 3px  3px 0px #1A6B28)
+    drop-shadow(0 6px 10px rgba(0,0,0,0.3));
+  letter-spacing: 2px;
+  display: block;
+}

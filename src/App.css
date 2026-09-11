@@ -1,0 +1,38 @@
+/* ============================================
+   APP-LEVEL STYLES — Unified Seamless Flow
+   ============================================ */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+
+main {
+  flex: 1;
+  background: linear-gradient(
+    180deg, 
+    #FFFFFF 0%, 
+    #AEFBFF 100%
+  );
+  width: 100%;
+}
+
+/* Smooth section transitions */
+section {
+  position: relative;
+  width: 100%;
+}
+
+/* Scroll reveal utility */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
