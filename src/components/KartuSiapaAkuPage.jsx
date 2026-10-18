@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './KartuSiapaAkuPage.css';
 
 // Handcrafted SVG Icons (NO raw emojis!)
@@ -260,33 +260,38 @@ const seligmanDeck = [
   }
 ];
 
-export default function KartuSiapaAkuPage({ onBackToHome, onNavigateToModulku }) {
+const scoreLabels = [
+  ['bravery', 'Berani', GameSVG.lion],
+  ['kindness', 'Baik Hati', GameSVG.heart],
+  ['creativity', 'Kreatif', GameSVG.palette],
+  ['teamwork', 'Kompak', GameSVG.team],
+  ['leadership', 'Bijak', GameSVG.compass],
+  ['resilience', 'Gigih', GameSVG.rocket],
+];
+
+const emptyScores = { bravery: 0, kindness: 0, creativity: 0, teamwork: 0, leadership: 0, resilience: 0 };
+
+export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
   const [activeTab, setActiveTab] = useState('draw'); // 'draw' | 'deck'
 
-  // Draw Game State
+  // Draw game state
   const [currentDrawIdx, setCurrentDrawIdx] = useState(0);
   const [isDrawing, setIsDrawing] = useState(false);
   const [stars, setStars] = useState(0);
-  const [scores, setScores] = useState({
-    bravery: 0,
-    kindness: 0,
-    creativity: 0,
-    teamwork: 0,
-    leadership: 0,
-    resilience: 0
-  });
+  const [scores, setScores] = useState(emptyScores);
   const [gameFinished, setGameFinished] = useState(false);
   const [resultProfile, setResultProfile] = useState(null);
+  const drawTimer = useRef(null);
 
-  // Deck State
+  // Deck state
   const [flippedCards, setFlippedCards] = useState([]);
 
-  // Draw Card Handler
+  useEffect(() => () => clearTimeout(drawTimer.current), []);
+
   const handleDrawCard = () => {
     setIsDrawing(true);
-    setTimeout(() => {
-      setIsDrawing(false);
-    }, 400);
+    clearTimeout(drawTimer.current);
+    drawTimer.current = setTimeout(() => setIsDrawing(false), 400);
   };
 
   const handleChooseAction = (profileKey) => {
@@ -298,7 +303,6 @@ export default function KartuSiapaAkuPage({ onBackToHome, onNavigateToModulku })
       setCurrentDrawIdx(currentDrawIdx + 1);
       handleDrawCard();
     } else {
-      // Find top score profile
       let topProfile = 'kindness';
       let maxScore = -1;
       Object.keys(newScores).forEach(key => {
@@ -315,262 +319,205 @@ export default function KartuSiapaAkuPage({ onBackToHome, onNavigateToModulku })
   const resetGame = () => {
     setCurrentDrawIdx(0);
     setStars(0);
-    setScores({ bravery: 0, kindness: 0, creativity: 0, teamwork: 0, leadership: 0, resilience: 0 });
+    setScores(emptyScores);
     setGameFinished(false);
     setResultProfile(null);
   };
 
-  // Flip 3D card
   const toggleFlip = (id) => {
-    if (flippedCards.includes(id)) {
-      setFlippedCards(flippedCards.filter(c => c !== id));
-    } else {
-      setFlippedCards([...flippedCards, id]);
-    }
+    setFlippedCards(prev => (prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]));
   };
 
+  const mission = missionCards[currentDrawIdx];
+
   return (
-    <div className="siapa-aku-page">
-      {/* Hero Header */}
-      <section className="siapa-aku-hero">
-        <div className="siapa-aku-hero__container">
-          <div className="siapa-aku-nav-buttons">
-            <button className="siapa-aku-back-btn" onClick={onBackToHome} id="btn-back-home">
-              ← Beranda
-            </button>
-            <button className="siapa-aku-modul-btn" onClick={onNavigateToModulku} id="btn-to-modulku">
-              {GameSVG.cards} Lihat Modul Digital
-            </button>
-          </div>
+    <div className="ks-page">
+      {/* ── Header ── */}
+      <header className="ks-header">
+        <h1 className="ks-header__title">Kartu Siapa Aku?</h1>
+        <p className="ks-header__desc">
+          Tarik kartu misi, pilih tindakan juaramu, dan temukan karakter yang paling cocok denganmu.
+        </p>
 
-          <div className="siapa-aku-hero__header">
-            <div className="siapa-aku-hero__badge">
-              <span>Arena Karakter Pedal Juara</span>
-            </div>
-            <h1 className="siapa-aku-hero__title">
-              Kartu <span className="highlight-pedal">SIAPA</span> <span className="highlight-juara">AKU?</span>
-            </h1>
-            <p className="siapa-aku-hero__subtitle">
-              Kocok & tarik kartu misi karaktermu! Selesaikan tantangan untuk mengumpulkan Bintang Karakter dan temukan profil Juaramu.
-            </p>
-
-            {/* Game Mode Selector */}
-            <div className="siapa-aku-tab-selector">
-              <button
-                className={`siapa-aku-tab-btn ${activeTab === 'draw' ? 'active' : ''}`}
-                onClick={() => setActiveTab('draw')}
-                id="tab-draw-game"
-              >
-                {GameSVG.draw} Tarik Kartu Misi
-              </button>
-              <button
-                className={`siapa-aku-tab-btn ${activeTab === 'deck' ? 'active' : ''}`}
-                onClick={() => setActiveTab('deck')}
-                id="tab-deck-game"
-              >
-                {GameSVG.cards} Geladak Kartu 3D
-              </button>
-            </div>
-          </div>
+        <div className="ks-tabs" role="group" aria-label="Mode permainan">
+          <button
+            type="button"
+            className={`ks-tab${activeTab === 'draw' ? ' ks-tab--active' : ''}`}
+            aria-pressed={activeTab === 'draw'}
+            onClick={() => setActiveTab('draw')}
+            id="tab-draw-game"
+          >
+            {GameSVG.draw} Tarik Kartu Misi
+          </button>
+          <button
+            type="button"
+            className={`ks-tab${activeTab === 'deck' ? ' ks-tab--active' : ''}`}
+            aria-pressed={activeTab === 'deck'}
+            onClick={() => setActiveTab('deck')}
+            id="tab-deck-game"
+          >
+            {GameSVG.cards} Kartu Karakter
+          </button>
         </div>
-      </section>
+      </header>
 
-      {/* Main Game Arena */}
-      <section className="siapa-aku-content">
-        <div className="siapa-aku-container">
+      <main className="ks-content">
 
-          {/* MODE 1: PHYSICAL CARD DRAW QUEST */}
-          {activeTab === 'draw' && (
-            <div className="siapa-aku-draw-arena">
-              {!gameFinished ? (
-                <div className="draw-layout">
-                  {/* Left: Physical Card Deck Stage */}
-                  <div className="draw-card-stage">
-                    <div className="draw-score-badge">
-                      <span>Bintang Karakter: <strong>{stars}</strong></span>
-                      <div className="stars-row">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <span key={i} className={`star-item ${i < stars ? 'earned' : ''}`}>
-                            {GameSVG.star}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+        {/* ═════ MODE 1: TARIK KARTU MISI ═════ */}
+        {activeTab === 'draw' && !gameFinished && (
+          <div className="ks-draw">
+            <section className="ks-stage" aria-label="Kartu misi">
+              <div className="ks-progress">
+                <span className="ks-progress__text" aria-live="polite">
+                  Misi {currentDrawIdx + 1} dari {missionCards.length}
+                </span>
+                <span className="ks-stars" aria-label={`Bintang karakter: ${stars}`}>
+                  {Array.from({ length: missionCards.length }).map((_, i) => (
+                    <span key={i} className={`ks-star${i < stars ? ' ks-star--earned' : ''}`}>
+                      {GameSVG.star}
+                    </span>
+                  ))}
+                </span>
+              </div>
 
-                    {/* Stacked Physical Card Animation */}
-                    <div className={`physical-card-stack ${isDrawing ? 'drawing' : ''}`}>
-                      <div className="stack-card stack-card-3" />
-                      <div className="stack-card stack-card-2" />
-                      <div className="stack-card stack-card-1">
-                        <div className="card-inner-front">
-                          <div className="card-top-bar">
-                            <span className="card-misi-tag">TANTANGAN {currentDrawIdx + 1}/5</span>
-                            <span className="card-logo-tag">PEDAL JUARA</span>
-                          </div>
-
-                          <div className="card-body-content">
-                            <h3 className="card-misi-title">{missionCards[currentDrawIdx].title}</h3>
-                            <p className="card-misi-scenario">{missionCards[currentDrawIdx].scenario}</p>
-                          </div>
-
-                          <div className="card-bottom-bar">
-                            <span>Pilih Tindakan Juaramu Di Samping →</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              <div className={`ks-stack${isDrawing ? ' ks-stack--drawing' : ''}`}>
+                <div className="ks-stack__back ks-stack__back--3" aria-hidden="true" />
+                <div className="ks-stack__back ks-stack__back--2" aria-hidden="true" />
+                <article className="ks-mission">
+                  <div className="ks-mission__top">
+                    <span className="ks-pill ks-pill--cyan">Tantangan {currentDrawIdx + 1}</span>
+                    <span className="ks-mission__brand">Pedal Juara</span>
                   </div>
+                  <h2 className="ks-mission__title">{mission.title}</h2>
+                  <p className="ks-mission__scenario">{mission.scenario}</p>
+                </article>
+              </div>
+            </section>
 
-                  {/* Right: Decision Options & Power Meters */}
-                  <div className="draw-options-panel">
-                    <h3 className="panel-title">Apa Tindakan Juaramu?</h3>
-                    <p className="panel-sub">Pilih salah satu langkah di bawah untuk menentukan karaktermu:</p>
+            <section className="ks-panel" aria-labelledby="ks-options-title">
+              <h2 id="ks-options-title" className="ks-panel__title">Apa tindakan juaramu?</h2>
+              <p className="ks-panel__sub">Pilih satu langkah. Pilihanmu menentukan karakter akhirmu.</p>
 
-                    <div className="options-stack">
-                      {missionCards[currentDrawIdx].options.map((opt, idx) => (
-                        <button
-                          key={idx}
-                          className="action-option-card"
-                          onClick={() => handleChooseAction(opt.profile)}
-                        >
-                          <span className="action-label-chip">{opt.label}</span>
-                          <p className="action-text">{opt.text}</p>
-                        </button>
-                      ))}
-                    </div>
+              <div className="ks-options">
+                {mission.options.map((opt, idx) => (
+                  <button
+                    type="button"
+                    key={`${mission.id}-${idx}`}
+                    className="ks-option"
+                    onClick={() => handleChooseAction(opt.profile)}
+                  >
+                    <span className="ks-pill ks-pill--tag">{opt.label}</span>
+                    <span className="ks-option__text">{opt.text}</span>
+                  </button>
+                ))}
+              </div>
 
-                    {/* Live Power Dashboard */}
-                    <div className="power-dashboard">
-                      <h4 className="dashboard-title">Papan Kekuatan Sementara:</h4>
-                      <div className="dashboard-grid">
-                        <div className="power-chip">
-                          <span className="chip-icon">{GameSVG.lion}</span>
-                          <span className="chip-label">Berani ({scores.bravery})</span>
-                        </div>
-                        <div className="power-chip">
-                          <span className="chip-icon">{GameSVG.heart}</span>
-                          <span className="chip-label">Baik ({scores.kindness})</span>
-                        </div>
-                        <div className="power-chip">
-                          <span className="chip-icon">{GameSVG.palette}</span>
-                          <span className="chip-label">Kreatif ({scores.creativity})</span>
-                        </div>
-                        <div className="power-chip">
-                          <span className="chip-icon">{GameSVG.team}</span>
-                          <span className="chip-label">Kompak ({scores.teamwork})</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                /* RESULT CHAMPION CARD */
-                <div className="siapa-aku-result-card" style={{ '--result-theme': resultProfile.badgeColor }}>
-                  <div className="result-card-inner">
-                    <div className="result-badge-header">
-                      <span className="result-trophy">{GameSVG.trophy}</span>
-                      <span className="result-badge-title">KARTU JUARA SAYA</span>
-                    </div>
+              <div className="ks-power">
+                <h3 className="ks-power__title">Papan kekuatan sementara</h3>
+                <ul className="ks-power__grid">
+                  {scoreLabels.map(([key, label, icon]) => (
+                    <li key={key} className={`ks-power__chip${scores[key] > 0 ? ' ks-power__chip--on' : ''}`}>
+                      <span className="ks-power__icon">{icon}</span>
+                      <span className="ks-power__label">{label}</span>
+                      <span className="ks-power__count">{scores[key]}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          </div>
+        )}
 
-                    <div className="result-hero-box" style={{ background: resultProfile.gradient }}>
-                      <div className="result-avatar-wrap">
-                        {resultProfile.icon}
-                      </div>
-                      <h2 className="result-hero-title">{resultProfile.title}</h2>
-                      <p className="result-hero-tagline">{resultProfile.tagline}</p>
-                    </div>
+        {/* ═════ HASIL ═════ */}
+        {activeTab === 'draw' && gameFinished && resultProfile && (
+          <article className="ks-result" aria-labelledby="ks-result-title">
+            <div className="ks-result__hero" style={{ '--ks-accent': resultProfile.badgeColor }}>
+              <span className="ks-pill ks-pill--white">
+                {GameSVG.trophy} Kartu juara saya
+              </span>
+              <div className="ks-result__avatar">{resultProfile.icon}</div>
+              <h2 id="ks-result-title" className="ks-result__title">{resultProfile.title}</h2>
+              <p className="ks-result__tagline">{resultProfile.tagline}</p>
+            </div>
 
-                    <div className="result-details-grid">
-                      <div className="result-detail-box">
-                        <h4>Gambaran Karaktermu:</h4>
-                        <p>{resultProfile.description}</p>
-                      </div>
+            <div className="ks-result__grid">
+              <section className="ks-result__box">
+                <h3>Gambaran karaktermu</h3>
+                <p>{resultProfile.description}</p>
+              </section>
+              <section className="ks-result__box">
+                <h3>Kekuatan utamamu</h3>
+                <ul className="ks-result__list">
+                  {resultProfile.strengths.map((s, i) => (
+                    <li key={i}>{GameSVG.check}<span>{s}</span></li>
+                  ))}
+                </ul>
+              </section>
+            </div>
 
-                      <div className="result-detail-box">
-                        <h4>Kekuatan Utama Kamu:</h4>
-                        <ul className="result-strengths-list">
-                          {resultProfile.strengths.map((str, i) => (
-                            <li key={i}>{GameSVG.check} {str}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+            <div className="ks-result__tip">
+              <strong>Langkah juara berikutnya</strong>
+              <p>{resultProfile.tip}</p>
+            </div>
 
-                    <div className="result-tip-banner">
-                      <strong>Langkah Juara Berikutnya:</strong>
-                      <p>{resultProfile.tip}</p>
-                    </div>
-
-                    <div className="result-actions-bar">
-                      <button className="btn-result-reset" onClick={resetGame}>
-                        {GameSVG.refresh} Main Lagi
-                      </button>
-                      <button className="btn-result-deck" onClick={() => setActiveTab('deck')}>
-                        {GameSVG.cards} Lihat Geladak Kartu 3D
-                      </button>
-                    </div>
-                  </div>
-                </div>
+            <div className="ks-result__actions">
+              <button type="button" className="ks-btn ks-btn--primary" onClick={resetGame}>
+                {GameSVG.refresh} Main lagi
+              </button>
+              <button type="button" className="ks-btn ks-btn--outline" onClick={() => setActiveTab('deck')}>
+                {GameSVG.cards} Lihat kartu karakter
+              </button>
+              {onNavigateToModulku && (
+                <button type="button" className="ks-btn ks-btn--text" onClick={onNavigateToModulku}>
+                  Kembali ke Modulku
+                </button>
               )}
             </div>
-          )}
+          </article>
+        )}
 
-          {/* MODE 2: 3D SELIGMAN CARD DECK */}
-          {activeTab === 'deck' && (
-            <div className="siapa-aku-deck-arena">
-              <div className="deck-arena-header">
-                <h2>Geladak Kartu 24 Character Strengths (Seligman)</h2>
-                <p>Klik kartu fisik di bawah ini untuk membalikkan (flip 3D) dan mempelajari kekuatan karakter!</p>
-              </div>
+        {/* ═════ MODE 2: KARTU KARAKTER ═════ */}
+        {activeTab === 'deck' && (
+          <section className="ks-deck" aria-labelledby="ks-deck-title">
+            <h2 id="ks-deck-title" className="ks-deck__title">Kartu Karakter Juara</h2>
+            <p className="ks-deck__desc">Ketuk kartu untuk membaliknya dan baca aksi nyata yang bisa kamu lakukan.</p>
 
-              <div className="deck-cards-grid">
-                {seligmanDeck.map((card) => {
-                  const isFlipped = flippedCards.includes(card.id);
-                  return (
-                    <div
-                      key={card.id}
-                      className={`seligman-card-wrap ${isFlipped ? 'flipped' : ''}`}
-                      onClick={() => toggleFlip(card.id)}
-                    >
-                      <div className="seligman-card-inner">
-                        {/* FRONT FACE */}
-                        <div className="seligman-face face-front">
-                          <div className="face-header">
-                            <span className="face-category">{card.category}</span>
-                          </div>
-                          <div className="face-body">
-                            <div className="face-icon-wrap" style={{ borderColor: card.color }}>
-                              {card.icon}
-                            </div>
-                            <h3 className="face-title">{card.title}</h3>
-                          </div>
-                          <div className="face-footer">
-                            <span>Klik untuk Balik Kartu 🔄</span>
-                          </div>
-                        </div>
-
-                        {/* BACK FACE */}
-                        <div className="seligman-face face-back" style={{ '--card-accent': card.color }}>
-                          <div className="face-back-header">
-                            <span className="face-back-icon">{card.icon}</span>
-                            <span className="face-back-badge">{card.title}</span>
-                          </div>
-                          <p className="face-back-desc">{card.description}</p>
-                          <div className="face-back-action">
-                            <strong>Aksi Nyata:</strong>
-                            <p>{card.actionTip}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="ks-deck__grid">
+              {seligmanDeck.map((card) => {
+                const isFlipped = flippedCards.includes(card.id);
+                return (
+                  <button
+                    type="button"
+                    key={card.id}
+                    className={`ks-flip${isFlipped ? ' ks-flip--flipped' : ''}`}
+                    aria-pressed={isFlipped}
+                    aria-label={`${card.title}. ${isFlipped ? 'Sisi belakang terbuka' : 'Ketuk untuk membalik kartu'}`}
+                    onClick={() => toggleFlip(card.id)}
+                    style={{ '--ks-accent': card.color }}
+                  >
+                    <span className="ks-flip__inner">
+                      <span className="ks-flip__face ks-flip__front">
+                        <span className="ks-pill ks-pill--cyan">{card.category}</span>
+                        <span className="ks-flip__icon">{card.icon}</span>
+                        <span className="ks-flip__name">{card.title}</span>
+                        <span className="ks-flip__hint">Ketuk untuk membalik</span>
+                      </span>
+                      <span className="ks-flip__face ks-flip__back">
+                        <span className="ks-flip__back-title">{card.title}</span>
+                        <span className="ks-flip__desc">{card.description}</span>
+                        <span className="ks-flip__action">
+                          <strong>Aksi nyata</strong>
+                          {card.actionTip}
+                        </span>
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-          )}
-
-        </div>
-      </section>
+          </section>
+        )}
+      </main>
     </div>
   );
 }
