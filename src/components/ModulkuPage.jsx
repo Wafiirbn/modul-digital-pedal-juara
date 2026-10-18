@@ -1,267 +1,210 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import './ModulkuPage.css';
 
-// SVG Icons to replace all emojis
-const SVG = {
-  rocket: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF6B2B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
-      <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"/>
-    </svg>
-  ),
-  compass: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2D7DD2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
-    </svg>
-  ),
-  recycle: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3DB54A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="7 19 3 19 3 15"/>
-      <path d="M13 19h4a2 2 0 0 0 1.83-1.2l2.35-5.3a2 2 0 0 0-.58-2.35l-3.3-2.65a2 2 0 0 0-2.6 0l-3.3 2.65a2 2 0 0 0-.58 2.35l2.35 5.3A2 2 0 0 0 13 19z"/>
-      <path d="M4 14.5A7.5 7.5 0 0 1 12 4.5c3.2 0 6 2 7 5"/>
-    </svg>
-  ),
-  video: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B51E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="23 7 16 12 23 17 23 7"/>
-      <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-    </svg>
-  ),
-  palette: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8302A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="13.5" cy="6.5" r=".5" fill="#E8302A"/>
-      <circle cx="17.5" cy="10.5" r=".5" fill="#E8302A"/>
-      <circle cx="8.5" cy="7.5" r=".5" fill="#E8302A"/>
-      <circle cx="6.5" cy="12.5" r=".5" fill="#E8302A"/>
-      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.92 0 1.7-.65 1.9-1.54a1.86 1.86 0 0 0-.48-1.74l-.24-.25a1.86 1.86 0 0 1 .52-2.97l.76-.38A4 4 0 0 0 17 11.5V11c0-5-3.8-9-5-9z"/>
-    </svg>
-  ),
-  trophy: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F2994A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-      <path d="M4 22h16"/>
-      <path d="M10 14.66V17c0 .55-.45 1-1 1H7v4h10v-4h-2c-.55 0-1-.45-1-1v-2.34"/>
-      <path d="M18 4H6v7a6 6 0 0 0 12 0V4z"/>
-    </svg>
-  ),
-  star: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00A896" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-    </svg>
-  ),
-  clock: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-  ),
-  target: (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <circle cx="12" cy="12" r="6"/>
-      <circle cx="12" cy="12" r="2"/>
-    </svg>
-  ),
-  book: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-  ),
-  download: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-  ),
-  link: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-    </svg>
-  ),
-  search: (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-  ),
-  check: (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2D7DD2" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
-  )
-};
-
+/* ── Data ─────────────────────────────────────────── */
 const modulesData = [
   {
-    id: 'modul-1',
-    stage: 'Tahap 1',
-    category: 'Pra-Acara',
-    badgeClass: 'badge-pra',
-    title: 'Modul 1: Pra-Acara & Pemetaan Karakter "Siapa Aku"',
-    subtitle: 'Sosialisasi awal, pemetaan karakter, dan permainan kartu interaktif',
-    icon: SVG.rocket,
-    duration: '2 Pertemuan (120 Menit)',
-    target: 'Anak Usia 8–12 Tahun & Fasilitator',
-    color: '#FF6B2B',
-    summary: 'Rangkaian pra-acara untuk memperkenalkan program Pedal Juara, mencairkan suasana dengan ice breaking, serta memetakan kondisi awal dan karakter unik setiap peserta.',
+    id: 'modul-1', step: 1,
+    category: 'Pra-Acara', filterGroup: 'Karakter',
+    tag: 'PRA-ACARA',
+    title: 'Pra-Acara & Pemetaan Karakter',
+    tagline: 'Kenalan dengan Pedal Juara dan mulai mengenali kekuatan dirimu.',
+    duration: '2 pertemuan', time: '120 menit', target: 'Usia 8–12 tahun',
     chapters: [
-      { title: 'Bab 1: Sosialisasi Program & Orientasi Belajar', content: 'Panduan pelaksanaan sosialisasi untuk membangun antusiasme dan kepercayaan anak-anak. Dilengkapi skrip sambutan fasilitator dan ice breaking energik.' },
-      { title: 'Bab 2: Panduan Permainan Kartu "Siapa Aku"', content: 'Aturan main kartu karakter "Siapa Aku" untuk menggali minat, bakat, kelebihan, dan hal yang paling disukai peserta secara menyenangkan.' },
-      { title: 'Bab 3: Asesmen Pemetaan Potensi Karakter Awal', content: 'Lembar observasi dan kuesioner bergambar untuk mengukur tingkat kepedulian lingkungan, kerja sama, dan percaya diri awal.' },
-      { title: 'Bab 4: Panduan Pembentukan Kelompok Belajar', content: 'Petunjuk praktis membagi kelompok heterogen agar tiap anak saling melengkapi berdasarkan hasil asesmen awal.' }
+      { title: 'Sosialisasi Program & Orientasi Belajar', desc: 'Membangun antusiasme dan kepercayaan anak-anak melalui ice breaking yang energik.' },
+      { title: 'Permainan Kartu "Siapa Aku"', desc: 'Menggali minat, bakat, dan kelebihan peserta secara menyenangkan lewat kartu karakter.' },
+      { title: 'Asesmen Pemetaan Potensi Awal', desc: 'Mengukur tingkat kepedulian lingkungan, kerja sama, dan percaya diri peserta.' },
+      { title: 'Pembentukan Kelompok Belajar', desc: 'Membagi kelompok heterogen agar tiap anak saling melengkapi.' },
     ],
     features: ['Kartu Karakter Siapa Aku', 'Lembar Observasi Awal', 'Panduan Ice Breaking', 'Format Rekap Asesmen'],
     downloadUrl: '#',
-    externalTool: { label: 'Buka Kartu Siapa Aku', link: '#kartu-siapa-aku' }
+    externalTool: { label: 'Buka Kartu Siapa Aku', link: '#kartu-siapa-aku' },
   },
   {
-    id: 'modul-2',
-    stage: 'Tahap 2',
-    category: 'Jelajah',
-    badgeClass: 'badge-jelajah',
-    title: 'Modul 2: Jelajah Peta Karakter, Literasi & Numerasi',
-    subtitle: 'Eksplorasi kekuatan karakter melalui studi kasus, cerita & tantangan angka',
-    icon: SVG.compass,
-    duration: '3 Pertemuan (180 Menit)',
-    target: 'Anak Usia 8–12 Tahun',
-    color: '#2D7DD2',
-    summary: 'Mengintegrasikan 24 Character Strengths Seligman dengan aktivitas literasi bacaan inspiratif dan tantangan matematika praktis berbasis lingkungan.',
+    id: 'modul-2', step: 2,
+    category: 'Jelajah', filterGroup: 'Karakter',
+    tag: 'JELAJAH KARAKTER',
+    title: 'Jelajahi Karakter, Literasi & Numerasi',
+    tagline: 'Temukan kekuatan karakter lewat cerita, permainan, dan tantangan sederhana.',
+    duration: '3 pertemuan', time: '180 menit', target: 'Usia 8–12 tahun',
     chapters: [
-      { title: 'Bab 1: Mengenal 6 Kebijakan & 24 Character Strengths', content: 'Pengenalan karakter juara (keberanian, kebaikan hati, keadilan, kebijaksanaan, kesederhanaan, dan spiritualitas) lewat cerita bergambar.' },
-      { title: 'Bab 2: Tantangan Literasi Cerita Juara', content: 'Lembar membaca kritis dan diskusi kelompok untuk mengidentifikasi karakter tokoh cerita inspiratif.' },
-      { title: 'Bab 3: Permainan Numerasi "Hitung Langkah Juaramu"', content: 'Latihan perhitungan matematis kontekstual seperti mengukur jumlah sampah plastik dan menghitung jarak tempuh kegiatan.' },
-      { title: 'Bab 4: Lembar Kerja Studi Kasus Solutif', content: 'Simulasi penyelesaian masalah sosial lingkungan di sekitar sekolah dengan pendekatan kolaboratif.' }
+      { title: '24 Character Strengths', desc: 'Mengenal karakter juara lewat cerita bergambar yang menarik dan mudah dipahami.' },
+      { title: 'Tantangan Literasi Cerita Juara', desc: 'Membaca kritis dan diskusi kelompok untuk mengidentifikasi karakter tokoh inspiratif.' },
+      { title: 'Permainan Numerasi', desc: 'Latihan matematika kontekstual yang relevan dengan kehidupan sehari-hari.' },
+      { title: 'Studi Kasus Solutif', desc: 'Simulasi penyelesaian masalah sosial lingkungan secara kolaboratif.' },
     ],
     features: ['Komik Karakter Juara', 'Lembar Kerja Literasi', 'Modul Numerasi Kontekstual', 'Kartu Tantangan Solusi'],
     downloadUrl: '#',
-    externalTool: { label: 'Buka Dadu Emosi', link: 'https://dadu-emosi.vercel.app/' }
+    externalTool: { label: 'Buka Dadu Emosi', link: 'https://dadu-emosi.vercel.app/' },
   },
   {
-    id: 'modul-3',
-    stage: 'Tahap 3',
-    category: 'Lokakarya',
-    badgeClass: 'badge-lokakarya',
-    title: 'Modul 3: Lokakarya Eksplorasi Sisa (Upcycling Plastik)',
-    subtitle: 'Mengubah material sisa tutup botol menjadi produk kreatif bernilai jual',
-    icon: SVG.recycle,
-    duration: '2 Pertemuan (150 Menit)',
-    target: 'Peserta & Instruktur Keterampilan',
-    color: '#3DB54A',
-    summary: 'Panduan hands-on pengolahan sampah plastik anorganik (tutup botol HD/PP) menjadi produk gantungan kunci dan kerajinan bernilai ekonomis.',
+    id: 'modul-3', step: 3,
+    category: 'Lokakarya', filterGroup: 'Karya',
+    tag: 'EKSPLORASI SISA',
+    title: 'Lokakarya Eksplorasi Sisa (Upcycling)',
+    tagline: 'Ubah barang bekas menjadi karya yang bisa digunakan dan bernilai.',
+    duration: '2 pertemuan', time: '150 menit', target: 'Peserta & Instruktur',
     chapters: [
-      { title: 'Bab 1: Edukasi Pemilahan Sampah & Dampak Ekologis', content: 'Materi visual pengenalan jenis-jenis plastik dan pentingnya daur ulang berbasis ekonomi sirkular.' },
-      { title: 'Bab 2: SOP Keselamatan Kerja & Persiapan Alat', content: 'Standar keamanan dalam mencacah, melelehkan, dan mencetak plastik sisa secara aman di bawah pengawasan.' },
-      { title: 'Bab 3: Teknik Pencetakan Gantungan Kunci Juara', content: 'Langkah demi langkah membuat gantungan kunci warna-warni unik dengan cetakan silikon.' },
-      { title: 'Bab 4: Analisis Potensi Ekonomi Sampah Plastik', content: 'Panduan menghitung nilai tambah dari barang bekas yang berhasil diselamatkan dari TPA.' }
+      { title: 'Edukasi Pemilahan Sampah', desc: 'Mengenal jenis-jenis plastik dan pentingnya daur ulang berbasis ekonomi sirkular.' },
+      { title: 'SOP Keselamatan Kerja', desc: 'Standar keamanan dalam mencacah, melelehkan, dan mencetak plastik sisa.' },
+      { title: 'Teknik Pencetakan Gantungan Kunci', desc: 'Membuat gantungan kunci warna-warni dengan cetakan silikon langkah demi langkah.' },
+      { title: 'Potensi Ekonomi Sampah Plastik', desc: 'Menghitung nilai tambah dari barang bekas yang berhasil diselamatkan.' },
     ],
-    features: ['Panduan SOP K3 Upcycling', 'Video Tutorial Pencetakan', 'Infografis Jenis Plastik', 'Kalkulator Nilai Sisa'],
-    downloadUrl: '#'
+    features: ['Panduan SOP K3', 'Video Tutorial', 'Infografis Jenis Plastik', 'Kalkulator Nilai Sisa'],
+    downloadUrl: '#',
   },
   {
-    id: 'modul-4',
-    stage: 'Tahap 4',
-    category: 'Lokakarya',
-    badgeClass: 'badge-lokakarya',
-    title: 'Modul 4: Lokakarya Citra Juara & Talenta Digital',
-    subtitle: 'Membangun identitas personal, desain label produk, dan konten promosi',
-    icon: SVG.video,
-    duration: '2 Pertemuan (120 Menit)',
-    target: 'Peserta & Mentoring Digital',
-    color: '#9B51E0',
-    summary: 'Melatih kemampuan personal branding, desain label packaging sederhana, serta keberanian tampil berkomunikasi di depan kamera.',
+    id: 'modul-4', step: 4,
+    category: 'Lokakarya', filterGroup: 'Karya',
+    tag: 'CITRA JUARA',
+    title: 'Citra Juara & Talenta Digital',
+    tagline: 'Kenali potensimu, buat karya digital, dan berani menunjukkannya.',
+    duration: '2 pertemuan', time: '120 menit', target: 'Peserta & Mentor',
     chapters: [
-      { title: 'Bab 1: Desain Label Personal & Branding Produk', content: 'Panduan membuat nama merek, logo sederhana, dan stiker kemasan karya peserta.' },
-      { title: 'Bab 2: Panduan Public Speaking & Pitching Karya', content: 'Teknik dasar berbicara percaya diri, kontak mata, dan menyampaikan nilai produk karya.' },
-      { title: 'Bab 3: Pembuatan Video Short / Story Promosi', content: 'Latihan merekam video promosi karya berdurasi 30 detik menggunakan ponsel dengan percaya diri.' },
-      { title: 'Bab 4: Etika Ber media Digital & Keamanan Anak', content: 'Pemahaman dasar bijak bersosial media dan menjaga kerahasiaan data pribadi.' }
+      { title: 'Desain Label Personal & Branding', desc: 'Membuat nama merek, logo sederhana, dan stiker kemasan karya.' },
+      { title: 'Public Speaking & Pitching', desc: 'Teknik berbicara percaya diri dan menyampaikan nilai produk.' },
+      { title: 'Video Short Promosi', desc: 'Merekam video promosi karya 30 detik menggunakan ponsel.' },
+      { title: 'Etika Bermedia Digital', desc: 'Bijak bersosial media dan menjaga keamanan data diri.' },
     ],
-    features: ['Template Label Produk', 'Modul Public Speaking', 'Checklist Produksi Video', 'Rubrik Evaluasi Presentasi'],
-    downloadUrl: '#'
+    features: ['Template Label Produk', 'Modul Public Speaking', 'Checklist Produksi Video', 'Rubrik Evaluasi'],
+    downloadUrl: '#',
   },
   {
-    id: 'modul-5',
-    stage: 'Tahap 5',
-    category: 'Lokakarya',
-    badgeClass: 'badge-lokakarya',
-    title: 'Modul 5: Lokakarya Reka Ruang & Dekorasi Eco-Creative',
-    subtitle: 'Berkreasi mengubah material sisa menjadi dekorasi kelas & booth bazar',
-    icon: SVG.palette,
-    duration: '2 Pertemuan (150 Menit)',
-    target: 'Kelompok Peserta',
-    color: '#E8302A',
-    summary: 'Mendorong semangat gotong royong dan rasa memiliki lingkungan sekolah melalui pembuatan instalasi dekorasi ruang dan booth dari sampah plastik.',
+    id: 'modul-5', step: 5,
+    category: 'Lokakarya', filterGroup: 'Karya',
+    tag: 'REKA RUANG',
+    title: 'Lokakarya Reka Ruang & Dekorasi Eco',
+    tagline: 'Berkolaborasi menciptakan ruang belajar yang lebih hidup dan bermakna.',
+    duration: '2 pertemuan', time: '150 menit', target: 'Kelompok Peserta',
     chapters: [
-      { title: 'Bab 1: Perancangan Konsep Lay-out & Stand Bazaar', content: 'Panduan sketsa denah dan perencanaan tema booth bazar ramah lingkungan.' },
-      { title: 'Bab 2: Pembuatan Ornamen Wall Decor dari Sampah', content: 'Tutorial merangkai hiasan dinding, spanduk daur ulang, dan sign board estetik.' },
-      { title: 'Bab 3: Pembagian Peran Kerja Sama Tim', content: 'Metode pembagian tugas (manajer booth, desainer, kurator produk) agar semua anak berpartisipasi.' },
-      { title: 'Bab 4: Finishing & Uji Kelayakan Stand', content: 'Checklist kerapihan, keamanan struktur booth, dan kenyamanan pengunjung.' }
+      { title: 'Perancangan Konsep Booth Bazar', desc: 'Sketsa denah dan perencanaan tema booth bazar ramah lingkungan.' },
+      { title: 'Ornamen Wall Decor dari Sampah', desc: 'Merangkai hiasan dinding, spanduk daur ulang, dan sign board estetik.' },
+      { title: 'Pembagian Peran Kerja Sama Tim', desc: 'Metode pembagian tugas agar semua anak berpartisipasi aktif.' },
+      { title: 'Finishing & Uji Kelayakan Stand', desc: 'Checklist kerapihan, keamanan struktur booth, dan kenyamanan pengunjung.' },
     ],
     features: ['Template Blueprint Booth', 'Panduan Dekorasi Eco', 'Lembar Tugas Tim', 'Checklist Keamanan'],
-    downloadUrl: '#'
+    downloadUrl: '#',
   },
   {
-    id: 'modul-6',
-    stage: 'Tahap 6',
-    category: 'Kewirausahaan',
-    badgeClass: 'badge-kewirausahaan',
-    title: 'Modul 6: Panduan Bazaar Karya Juara & Kewirausahaan',
-    subtitle: 'Praktik langsung penjualan produk karya, komunikasi transaksi & kas',
-    icon: SVG.trophy,
-    duration: '1 Hari Event (240 Menit)',
-    target: 'Peserta, Orang Tua & Komunitas',
-    color: '#F2994A',
-    summary: 'Pengalaman nyata menjalankan bisnis sosial mini, di mana anak-anak menjajakan hasil karya daur ulangnya kepada warga sekolah dan orang tua.',
+    id: 'modul-6', step: 6,
+    category: 'Kewirausahaan', filterGroup: 'Kewirausahaan',
+    tag: 'BAZAAR KARYA',
+    title: 'Panduan Bazaar Karya Juara',
+    tagline: 'Rasakan pengalaman berjualan nyata dan belajar berwirausaha.',
+    duration: '1 hari event', time: '240 menit', target: 'Peserta, Orang Tua & Komunitas',
     chapters: [
-      { title: 'Bab 1: Manajemen Pre-Opening Stand Bazar', content: 'Checklist penataan barang dagangan, penyusunan daftar harga, dan pembagian uang kembalian.' },
-      { title: 'Bab 2: Simuasi Pelayanan Konsumen & Negosiasi', content: 'Buku saku ucapan salam, cara menyapa pembeli dengan sopan, dan menjelaskan keunggulan karya.' },
-      { title: 'Bab 3: Pencatatan Buku Kas Sederhana', content: 'Lembar pencatatan barang keluar, pemasukan tunai, dan perhitungan modal vs keuntungan.' },
-      { title: 'Bab 4: Refleksi & Apresiasi Hasil Penjualan', content: 'Panduan penutupan bazar, penghitungan omzet bersama, dan syukuran kelompok.' }
+      { title: 'Manajemen Pre-Opening Stand', desc: 'Checklist penataan barang, daftar harga, dan pembagian kembalian.' },
+      { title: 'Pelayanan Konsumen & Negosiasi', desc: 'Cara menyapa pembeli dengan sopan dan menjelaskan keunggulan karya.' },
+      { title: 'Buku Kas Sederhana', desc: 'Pencatatan barang keluar, pemasukan, dan perhitungan modal vs keuntungan.' },
+      { title: 'Refleksi & Apresiasi Hasil', desc: 'Penutupan bazar, penghitungan omzet bersama, dan syukuran kelompok.' },
     ],
-    features: ['Buku Kas Sederhana', 'Daftar Harga Print-out', 'Panduan Pelayanan Ramah', 'Form Rekap Omzet'],
-    downloadUrl: '#'
+    features: ['Buku Kas Sederhana', 'Daftar Harga Print-out', 'Panduan Pelayanan', 'Form Rekap Omzet'],
+    downloadUrl: '#',
   },
   {
-    id: 'modul-7',
-    stage: 'Tahap 7',
-    category: 'Evaluasi',
-    badgeClass: 'badge-evaluasi',
-    title: 'Modul 7: Gema Masa Depan, Photovoice & Papan Impian',
-    subtitle: 'Refleksi perjalanan, pameran foto Photovoice, & penyusunan Dream Board',
-    icon: SVG.star,
-    duration: '2 Pertemuan (120 Menit)',
-    target: 'Peserta, Fasilitator & Orang Tua',
-    color: '#00A896',
-    summary: 'Penutup program yang berkesan untuk merefleksikan perubahan diri peserta melalui metode Photovoice, evaluasi post-test, dan penyusunan papan impian.',
+    id: 'modul-7', step: 7,
+    category: 'Evaluasi', filterGroup: 'Evaluasi',
+    tag: 'GEMA MASA DEPAN',
+    title: 'Gema Masa Depan & Papan Impian',
+    tagline: 'Lihat perjalananmu, rayakan kemajuanmu, dan bayangkan masa depanmu.',
+    duration: '2 pertemuan', time: '120 menit', target: 'Peserta, Fasilitator & Orang Tua',
     chapters: [
-      { title: 'Bab 1: Pameran Refleksi Metode Photovoice', content: 'Panduan anak memilih foto kenangan terbaik selama kegiatan dan menuliskan pesan perubahan dirinya.' },
-      { title: 'Bab 2: Asesmen Post-Test Perkembangan Karakter', content: 'Lembar evaluasi akhir untuk mengukur peningkatan karakter, literasi, numerasi, dan wawasan lingkungan.' },
-      { title: 'Bab 3: Workshop Penyusunan Papan Impian (Dream Board)', content: 'Instruksi membuat papan cita-cita masa depan 5 tahun mendatang berdasarkan karakter juara.' },
-      { title: 'Bab 4: Penyerahan Portofolio Juara & Sertifikat', content: 'Panduan seremoni wisuda kecil dan penyerahan hasil karya serta portofolio peserta.' }
+      { title: 'Pameran Refleksi Photovoice', desc: 'Memilih foto kenangan terbaik dan menuliskan pesan perubahan diri.' },
+      { title: 'Asesmen Post-Test Karakter', desc: 'Mengukur peningkatan karakter, literasi, numerasi, dan wawasan lingkungan.' },
+      { title: 'Workshop Papan Impian', desc: 'Membuat papan cita-cita masa depan berdasarkan karakter juara.' },
+      { title: 'Penyerahan Portofolio & Sertifikat', desc: 'Seremoni wisuda kecil dan penyerahan hasil karya peserta.' },
     ],
-    features: ['Template Photovoice', 'Lembar Post-Test Evaluasi', 'Kit Papan Impian (Dream Board)', 'Certificate Template'],
-    downloadUrl: '#'
-  }
+    features: ['Template Photovoice', 'Lembar Post-Test', 'Kit Papan Impian', 'Certificate Template'],
+    downloadUrl: '#',
+  },
 ];
 
-export default function ModulkuPage({ onBackToHome, onNavigateToKartu }) {
+const journeyLabels = ['Kenalan', 'Kenali Diri', 'Berkarya', 'Tunjukkan', 'Kreasi Ruang', 'Berwirausaha', 'Refleksi'];
+
+const filterGroups = [
+  { key: 'Semua', label: 'Semua' },
+  { key: 'Karakter', label: 'Karakter' },
+  { key: 'Karya', label: 'Karya' },
+  { key: 'Kewirausahaan', label: 'Kewirausahaan' },
+  { key: 'Evaluasi', label: 'Evaluasi' },
+];
+
+/* ── Icon helpers ── */
+const ArrowRight = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+const DownloadIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+  </svg>
+);
+const ExternalIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+);
+const SearchIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <circle cx="11" cy="11" r="7" /><line x1="17" y1="17" x2="22" y2="22" />
+  </svg>
+);
+const ClearIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+const ClockIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15.5 14" />
+  </svg>
+);
+const PeopleIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6" /><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.4c1.8.8 3 2.7 3 5.6" />
+  </svg>
+);
+
+/* ── Component ── */
+export default function ModulkuPage({ onNavigateToKartu }) {
+  const [activeFilter, setActiveFilter] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [selectedModule, setSelectedModule] = useState(null);
+  const moduleRefs = useRef({});
+  const searchInputRef = useRef(null);
 
-  const categories = ['Semua', 'Pra-Acara', 'Jelajah', 'Lokakarya', 'Kewirausahaan', 'Evaluasi'];
+  /* Combined filter + search */
+  const filteredModules = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return modulesData.filter(m => {
+      const matchesFilter = activeFilter === 'Semua' || m.filterGroup === activeFilter;
+      if (!q) return matchesFilter;
+      const matchesSearch =
+        m.title.toLowerCase().includes(q) ||
+        m.tagline.toLowerCase().includes(q) ||
+        m.tag.toLowerCase().includes(q) ||
+        m.category.toLowerCase().includes(q);
+      return matchesFilter && matchesSearch;
+    });
+  }, [activeFilter, searchQuery]);
 
-  const filteredModules = modulesData.filter(mod => {
-    const matchesSearch = mod.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          mod.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          mod.stage.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCat = selectedCategory === 'Semua' || mod.category === selectedCategory;
-    return matchesSearch && matchesCat;
-  });
+  const isSearchActive = searchQuery.trim().length > 0;
+
+  /* Close detail dialog with Escape; lock page scroll while open */
+  useEffect(() => {
+    if (!selectedModule) return undefined;
+    const onKey = (e) => { if (e.key === 'Escape') setSelectedModule(null); };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [selectedModule]);
 
   const handleExternalClick = (e, tool) => {
     if (tool.link === '#kartu-siapa-aku') {
@@ -270,210 +213,275 @@ export default function ModulkuPage({ onBackToHome, onNavigateToKartu }) {
     }
   };
 
+  const scrollToModule = (step) => {
+    const el = moduleRefs.current[step];
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    searchInputRef.current?.focus();
+  };
+
+  const resetAll = () => {
+    setSearchQuery('');
+    setActiveFilter('Semua');
+  };
+
+  const hasDownload = (m) => m.downloadUrl && m.downloadUrl !== '#';
+
   return (
-    <div className="modulku-page">
-      {/* Hero Banner with Homepage Aesthetic */}
-      <section className="modulku-hero">
-        <div className="modulku-hero__container">
-          <button className="modulku-back-btn" onClick={onBackToHome} id="btn-back-home">
-            ← Kembali ke Beranda
-          </button>
+    <div className="mk-page">
 
-          <div className="modulku-hero__content">
-            <div className="modulku-badge" id="modulku-badge">
-              <span className="modulku-badge-inner">{SVG.book} Modul Digital Interactive</span>
-            </div>
+      {/* ── Header ── */}
+      <header className="mk-header">
+        <h1 className="mk-header__title">Modul Pembelajaran</h1>
+        <p className="mk-header__desc">
+          Jelajahi materi, lanjutkan progres belajarmu, dan temukan aktivitas
+          yang sesuai dengan kebutuhanmu.
+        </p>
+      </header>
 
-            <h1 className="modulku-hero__title">
-              Pusat Modul Pembelajaran <span className="highlight-pedal">PEDAL</span> <span className="highlight-juara">JUARA</span>
-            </h1>
+      <div className="mk-layout">
 
-            <p className="modulku-hero__desc">
-              Akses dan unduh seluruh modul panduan digital interaktif dari Tahap 1 hingga Tahap 7.
-              Dirancang khusus untuk memfasilitasi pengembangan karakter, literasi, numerasi, dan kewirausahaan lingkungan.
-            </p>
+        {/* ── Left: Modulku list ── */}
+        <section className="mk-main" aria-labelledby="mk-list-title">
+          <div className="mk-main__top">
+            <h2 id="mk-list-title" className="mk-main__title">Modulku</h2>
 
-            {/* Search and Filters Box */}
-            <div className="modulku-filter-box">
-              <div className="modulku-search-input-wrap">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D7DD2" strokeWidth="2.5" strokeLinecap="round">
-                  <circle cx="11" cy="11" r="7"/>
-                  <line x1="17" y1="17" x2="22" y2="22"/>
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Cari modul, kata kunci, atau tahap program..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="modulku-search-input"
-                  id="modulku-search-input"
-                />
-                {searchQuery && (
-                  <button className="modulku-search-clear" onClick={() => setSearchQuery('')}>✕</button>
-                )}
-              </div>
-
-              {/* Category Filter Pills */}
-              <div className="modulku-categories">
-                {categories.map(cat => (
-                  <button
-                    key={cat}
-                    className={`modulku-cat-btn ${selectedCategory === cat ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory(cat)}
-                    id={`cat-btn-${cat.toLowerCase()}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+            <div className={`mk-search${isSearchActive ? ' mk-search--active' : ''}`}>
+              <span className="mk-search__icon"><SearchIcon /></span>
+              <input
+                ref={searchInputRef}
+                type="text"
+                className="mk-search__input"
+                placeholder="Cari nama atau kategori modul"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                id="search-modul"
+                aria-label="Cari modul"
+              />
+              {isSearchActive && (
+                <button className="mk-search__clear" onClick={clearSearch} aria-label="Hapus pencarian">
+                  <ClearIcon />
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Modules Grid Section */}
-      <section className="modulku-grid-section">
-        <div className="modulku-grid-container">
-          <div className="modulku-section-header">
-            <h2 className="modulku-section-title">Rangkaian Modul Digital ({filteredModules.length})</h2>
-            <p className="modulku-section-sub">Klik modul di bawah untuk melihat rincian bab, panduan fasilitator, dan materi PDF</p>
+          <div className="mk-filters" role="group" aria-label="Filter modul">
+            {filterGroups.map(f => (
+              <button
+                key={f.key}
+                type="button"
+                className={`mk-filter${activeFilter === f.key ? ' mk-filter--active' : ''}`}
+                aria-pressed={activeFilter === f.key}
+                onClick={() => setActiveFilter(f.key)}
+                id={`filter-${f.key.toLowerCase()}`}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
 
-          {filteredModules.length === 0 ? (
-            <div className="modulku-empty">
-              <span className="modulku-empty-icon">{SVG.search}</span>
-              <h3>Modul tidak ditemukan</h3>
-              <p>Coba kata kunci lain atau pilih kategori "Semua".</p>
-              <button className="modulku-reset-btn" onClick={() => { setSearchQuery(''); setSelectedCategory('Semua'); }}>
-                Reset Filter
+          <p className="mk-count" aria-live="polite">
+            {isSearchActive
+              ? <>{filteredModules.length} modul ditemukan untuk <strong>“{searchQuery.trim()}”</strong></>
+              : <>Menampilkan {filteredModules.length} dari {modulesData.length} modul</>}
+          </p>
+
+          {filteredModules.length === 0 && (
+            <div className="mk-empty">
+              <p className="mk-empty__title">
+                {isSearchActive ? 'Modul tidak ditemukan' : 'Belum ada modul di kategori ini'}
+              </p>
+              <p className="mk-empty__text">
+                {isSearchActive
+                  ? 'Coba kata kunci lain atau hapus pencarian untuk melihat semua modul.'
+                  : 'Pilih kategori lain atau tampilkan semua modul.'}
+              </p>
+              <button type="button" className="mk-btn-primary" onClick={isSearchActive ? clearSearch : resetAll}>
+                {isSearchActive ? 'Hapus pencarian' : 'Tampilkan semua modul'}
               </button>
             </div>
-          ) : (
-            <div className="modulku-grid">
-              {filteredModules.map((mod) => (
-                <div key={mod.id} className="modulku-card" style={{ '--card-color': mod.color }}>
-                  <div className="modulku-card__top">
-                    <span className={`modulku-card__badge ${mod.badgeClass}`}>
-                      {mod.stage}
-                    </span>
-                    <span className="modulku-card__icon">{mod.icon}</span>
+          )}
+
+          <div className="mk-list">
+            {filteredModules.map((mod) => (
+              <article
+                key={mod.id}
+                id={mod.id}
+                className="mk-card"
+                ref={el => { moduleRefs.current[mod.step] = el; }}
+              >
+                <div className="mk-card__thumb" data-group={mod.filterGroup} aria-hidden="true">
+                  <span className="mk-card__step">{mod.step}</span>
+                  <span className="mk-card__thumb-label">Tahap</span>
+                </div>
+
+                <div className="mk-card__body">
+                  <div className="mk-card__tags">
+                    <span className="mk-pill mk-pill--cat">{mod.category}</span>
+                    <span className="mk-pill mk-pill--tag">{mod.tag}</span>
                   </div>
+                  <h3 className="mk-card__title">{mod.title}</h3>
+                  <p className="mk-card__tagline">{mod.tagline}</p>
 
-                  <h3 className="modulku-card__title">{mod.title}</h3>
-                  <p className="modulku-card__subtitle">{mod.subtitle}</p>
-                  <p className="modulku-card__desc">{mod.summary}</p>
+                  <ul className="mk-card__meta">
+                    <li><ClockIcon />{mod.duration}, {mod.time}</li>
+                    <li><PeopleIcon />{mod.target}</li>
+                  </ul>
 
-                  <div className="modulku-card__meta">
-                    <span>{SVG.clock} {mod.duration}</span>
-                    <span>{SVG.target} {mod.target}</span>
-                  </div>
-
-                  <div className="modulku-card__tags">
-                    {mod.features.map((feat, idx) => (
-                      <span key={idx} className="modulku-tag">{SVG.check} {feat}</span>
-                    ))}
-                  </div>
-
-                  <div className="modulku-card__actions">
+                  <div className="mk-card__actions">
                     <button
-                      className="modulku-btn-primary"
+                      type="button"
+                      className="mk-btn-primary"
                       onClick={() => setSelectedModule(mod)}
                       id={`btn-detail-${mod.id}`}
                     >
-                      Jelajahi Modul →
+                      Lihat Modul <ArrowRight />
                     </button>
                     {mod.externalTool && (
                       <a
                         href={mod.externalTool.link}
+                        className="mk-btn-ghost"
                         target={mod.externalTool.link.startsWith('http') ? '_blank' : '_self'}
                         rel="noreferrer"
-                        className="modulku-btn-outline"
-                        onClick={(e) => handleExternalClick(e, mod.externalTool)}
+                        onClick={e => handleExternalClick(e, mod.externalTool)}
                       >
-                        {mod.externalTool.label}
+                        {mod.externalTool.label} <ExternalIcon />
                       </a>
                     )}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      {/* Detail Modal Reader */}
+        {/* ── Right: Journey + tools ── */}
+        <aside className="mk-side" aria-label="Perjalanan belajar">
+          <div className="mk-panel">
+            <h2 className="mk-panel__title">Perjalanan Belajar</h2>
+            <p className="mk-panel__sub">{modulesData.length} tahap, dari kenalan sampai refleksi.</p>
+            <ol className="mk-journey">
+              {modulesData.map((mod, idx) => {
+                const visible = filteredModules.includes(mod);
+                return (
+                  <li key={mod.id}>
+                    <button
+                      type="button"
+                      className={`mk-journey__item${visible ? '' : ' mk-journey__item--dim'}`}
+                      title={mod.title}
+                      onClick={() => {
+                        if (!visible) resetAll();
+                        setTimeout(() => scrollToModule(mod.step), 60);
+                      }}
+                    >
+                      <span className="mk-journey__num">{mod.step}</span>
+                      <span className="mk-journey__text">
+                        <span className="mk-journey__name">{journeyLabels[idx]}</span>
+                        <span className="mk-journey__cat">{mod.category}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+
+          <div className="mk-panel mk-panel--tools">
+            <h2 className="mk-panel__title">Aktivitas Interaktif</h2>
+            <p className="mk-panel__sub">Langsung dicoba bersama peserta.</p>
+            <a
+              className="mk-tool"
+              href="#kartu-siapa-aku"
+              onClick={e => { e.preventDefault(); if (onNavigateToKartu) onNavigateToKartu(); }}
+            >
+              <span className="mk-tool__name">Kartu Siapa Aku?</span>
+              <span className="mk-tool__go"><ArrowRight /></span>
+            </a>
+            <a className="mk-tool" href="https://dadu-emosi.vercel.app/" target="_blank" rel="noreferrer">
+              <span className="mk-tool__name">Dadu Emosi</span>
+              <span className="mk-tool__go"><ExternalIcon /></span>
+            </a>
+          </div>
+        </aside>
+      </div>
+
+      {/* ── Detail dialog ── */}
       {selectedModule && (
-        <div className="modulku-modal-overlay" onClick={() => setSelectedModule(null)}>
-          <div className="modulku-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modulku-modal-close" onClick={() => setSelectedModule(null)} aria-label="Tutup">
-              &times;
+        <div className="mk-modal-overlay" onClick={() => setSelectedModule(null)}>
+          <div
+            className="mk-modal"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mk-modal-title"
+          >
+            <button
+              type="button"
+              className="mk-modal__close"
+              onClick={() => setSelectedModule(null)}
+              aria-label="Tutup"
+              autoFocus
+            >
+              <ClearIcon />
             </button>
 
-            <div className="modulku-modal-header">
-              <span className="modulku-modal-icon-badge">{selectedModule.icon}</span>
-              <div className="modulku-modal-titles">
-                <span className={`modulku-card__badge ${selectedModule.badgeClass}`}>
-                  {selectedModule.stage} • {selectedModule.category}
-                </span>
-                <h3 className="modulku-modal-title">{selectedModule.title}</h3>
-                <p className="modulku-modal-subtitle">{selectedModule.subtitle}</p>
+            <div className="mk-modal__head">
+              <div className="mk-modal__stage">Tahap {selectedModule.step} · {selectedModule.category}</div>
+              <h2 id="mk-modal-title" className="mk-modal__title">{selectedModule.title}</h2>
+              <p className="mk-modal__tagline">{selectedModule.tagline}</p>
+            </div>
+
+            <ul className="mk-modal__meta-row">
+              <li><ClockIcon />{selectedModule.duration}, {selectedModule.time}</li>
+              <li><PeopleIcon />{selectedModule.target}</li>
+            </ul>
+
+            <div className="mk-modal__section">
+              <h3>Apa yang akan kita lakukan?</h3>
+              <ol className="mk-modal__chapters">
+                {selectedModule.chapters.map((ch, i) => (
+                  <li key={i} className="mk-modal__chapter">
+                    <div>
+                      <p className="mk-modal__ch-title">{ch.title}</p>
+                      <p className="mk-modal__ch-desc">{ch.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="mk-modal__section">
+              <h3>Materi & Perlengkapan</h3>
+              <div className="mk-modal__features">
+                {selectedModule.features.map((f, i) => (
+                  <span key={i} className="mk-modal__feat">{f}</span>
+                ))}
               </div>
             </div>
 
-            <div className="modulku-modal-body">
-              <div className="modulku-modal-info-box">
-                <div><strong>{SVG.clock} Durasi:</strong> {selectedModule.duration}</div>
-                <div><strong>{SVG.target} Sasaran:</strong> {selectedModule.target}</div>
-              </div>
-
-              <div className="modulku-modal-section">
-                <h4>Ringkasan Modul</h4>
-                <p className="modulku-modal-desc">{selectedModule.summary}</p>
-              </div>
-
-              <div className="modulku-modal-section">
-                <h4>Rincian Bab & Aktivitas</h4>
-                <div className="modulku-chapters-list">
-                  {selectedModule.chapters.map((chap, idx) => (
-                    <div key={idx} className="modulku-chapter-item">
-                      <h5>{chap.title}</h5>
-                      <p>{chap.content}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="modulku-modal-section">
-                <h4>Fitur & Kit Pembelajaran</h4>
-                <div className="modulku-features-grid">
-                  {selectedModule.features.map((feat, idx) => (
-                    <div key={idx} className="modulku-feature-chip">
-                      {SVG.check} {feat}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="modulku-modal-footer">
-              <button
-                className="modulku-btn-download"
-                onClick={() => alert(`Mengunduh file PDF ${selectedModule.title}...`)}
-              >
-                {SVG.download} Unduh Modul Digital (PDF)
-              </button>
+            <div className="mk-modal__footer">
+              {hasDownload(selectedModule) ? (
+                <a className="mk-btn-primary" href={selectedModule.downloadUrl} download>
+                  <DownloadIcon /> Unduh Modul (PDF)
+                </a>
+              ) : (
+                <button type="button" className="mk-btn-primary" disabled>
+                  <DownloadIcon /> PDF segera tersedia
+                </button>
+              )}
               {selectedModule.externalTool && (
                 <a
                   href={selectedModule.externalTool.link}
-                  className="modulku-btn-link"
+                  className="mk-btn-outline"
                   target={selectedModule.externalTool.link.startsWith('http') ? '_blank' : '_self'}
                   rel="noreferrer"
-                  onClick={(e) => {
-                    handleExternalClick(e, selectedModule.externalTool);
-                    setSelectedModule(null);
-                  }}
+                  onClick={e => { handleExternalClick(e, selectedModule.externalTool); setSelectedModule(null); }}
                 >
-                  {SVG.link} {selectedModule.externalTool.label}
+                  {selectedModule.externalTool.label}
                 </a>
               )}
             </div>
