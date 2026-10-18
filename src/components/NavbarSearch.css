@@ -1,0 +1,145 @@
+/* Search navbar — mandiri, tidak bergantung pada CSS navbar */
+
+.nsearch__btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #DDD8CC;
+  border-radius: 50%;
+  background: transparent;
+  color: #17324D;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.nsearch__btn:hover,
+.nsearch__btn:focus-visible {
+  color: #1464A5;
+  border-color: #1464A5;
+  background: rgba(20, 100, 165, 0.06);
+  outline: none;
+}
+
+.nsearch__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 96px 16px 16px;
+  background: rgba(23, 50, 77, 0.35);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  font-family: 'Poppins', sans-serif;
+}
+
+.nsearch__panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  background: #FBFAF6;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(23, 50, 77, 0.25);
+  overflow: hidden;
+  animation: nsearch-in 0.16s ease-out;
+}
+@keyframes nsearch-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.nsearch__field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 16px;
+  border-bottom: 1.5px solid #DDD8CC;
+  color: #1464A5;
+}
+.nsearch__field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: 500 15px 'Poppins', sans-serif;
+  color: #17324D;
+}
+.nsearch__field input::placeholder { color: #9AA3AE; font-weight: 400; }
+
+.nsearch__close {
+  border: 1px solid #DDD8CC;
+  border-radius: 6px;
+  background: transparent;
+  padding: 3px 8px;
+  font: 600 11px 'Poppins', sans-serif;
+  color: #718096;
+  cursor: pointer;
+}
+
+.nsearch__list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+.nsearch__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+.nsearch__item.is-active { background: rgba(20, 100, 165, 0.09); }
+
+.nsearch__text { display: flex; flex-direction: column; min-width: 0; }
+.nsearch__title { font-size: 14px; font-weight: 600; color: #17324D; }
+.nsearch__item.is-active .nsearch__title { color: #1464A5; }
+.nsearch__title mark {
+  background: rgba(20, 100, 165, 0.18);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+.nsearch__desc {
+  font-size: 12px;
+  color: #718096;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nsearch__type {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #718096;
+  border: 1px solid #DDD8CC;
+  border-radius: 20px;
+  padding: 2px 10px;
+}
+
+.nsearch__empty {
+  margin: 0;
+  padding: 24px 18px;
+  font-size: 13px;
+  color: #718096;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nsearch__panel { animation: none; }
+}
