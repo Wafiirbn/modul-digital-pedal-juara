@@ -182,14 +182,14 @@
 
 
 /* ============================================
-   PROGRAM STEP DETAIL MODAL
+   PROGRAM STEP DETAIL MODAL — NEW CARD DESIGN
    ============================================ */
 
 .about__modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 40, 75, 0.65);
-  backdrop-filter: blur(6px);
+  background: rgba(5, 15, 35, 0.75);
+  backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -201,32 +201,34 @@
 .about__modal-content {
   background: #FFFFFF;
   border-radius: 28px;
-  max-width: 540px;
+  max-width: 560px;
   width: 100%;
   position: relative;
-  box-shadow: 0 24px 60px rgba(10, 60, 120, 0.35);
-  padding: 32px 28px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
   animation: popUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 3px solid #E0F5FF;
 }
 
+/* Tombol tutup */
 .about__modal-close {
   position: absolute;
-  top: 16px;
-  right: 18px;
-  width: 36px;
-  height: 36px;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: #F0F8FF;
+  background: rgba(255,255,255,0.75);
   border: none;
-  font-size: 24px;
-  color: #1A4F8B;
+  font-size: 22px;
+  color: #1A1A2E;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  z-index: 2;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .about__modal-close:hover {
@@ -235,95 +237,116 @@
   transform: rotate(90deg);
 }
 
-.about__modal-header {
+/* ── Hero area ── */
+.about__modal-hero {
+  position: relative;
+  width: 100%;
+  min-height: 230px;
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 20px;
+  align-items: flex-end;
+  overflow: hidden;
+  background: transparent;
 }
 
-.about__modal-icon {
-  font-size: 40px;
-  background: #EAF7FF;
-  padding: 12px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  box-shadow: 0 4px 14px rgba(74, 173, 232, 0.2);
+.about__modal-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.7;
 }
 
-.about__modal-titles {
+.about__modal-hero-overlay {
+  display: none; /* tidak dipakai */
+}
+
+.about__modal-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 20px 24px 26px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
+  width: 100%;
 }
 
+/* Badge "Modul ke-X" */
 .about__modal-step-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #2D7DD2, #4AADE8);
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(255,255,255,0.35);
   color: #FFFFFF;
   font-family: 'Poppins', sans-serif;
-  font-weight: 800;
-  font-size: 11px;
-  padding: 3px 12px;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 4px 14px;
   border-radius: 100px;
   width: fit-content;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
 }
 
-.about__modal-title {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-  color: #0A3C7E;
-  margin: 4px 0 0 0;
-  line-height: 1.3;
+/* SVG title & subtitle */
+.about__modal-title-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
 }
 
-.about__modal-subtitle {
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
-  color: #3DB54A;
-  font-weight: 700;
-  margin: 0;
+.about__modal-subtitle-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
 }
 
+/* Legacy classes (kept for safety, no longer rendered) */
+.about__modal-title {}
+.about__modal-subtitle {}
+
+/* ── Body ── */
 .about__modal-body {
+  padding: 18px 18px 22px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+}
+
+.about__modal-box {
+  border-radius: 18px;
+  padding: 16px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.about__modal-box--desc {
+  background: linear-gradient(135deg, #1565C0 0%, #00B4D8 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.about__modal-box--goal {
+  background: linear-gradient(135deg, #1565C0 0%, #0096C7 100%);
+  color: #FFFFFF;
+  font-weight: 600;
 }
 
 .about__modal-desc {
-  font-family: 'Poppins', sans-serif;
-  font-size: 14px;
-  line-height: 1.65;
-  color: #334E68;
   margin: 0;
 }
 
-.about__modal-target {
-  background: linear-gradient(135deg, #F0FFF2 0%, #E8FAF0 100%);
-  border: 1.5px solid #B8E8C0;
-  border-radius: 16px;
-  padding: 14px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.about__modal-goal-label {
+  font-weight: 800;
+  margin: 0 0 4px 0;
 }
 
-.about__modal-target strong {
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
-  color: #1B8A28;
-}
-
-.about__modal-target p {
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
-  color: #2D5A35;
+.about__modal-goal-text {
   margin: 0;
 }
 
@@ -359,6 +382,6 @@
     font-size: 15px;
   }
   .about__modal-content {
-    padding: 24px 20px;
+    border-radius: 20px;
   }
 }
