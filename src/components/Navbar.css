@@ -1,86 +1,47 @@
 /* ============================================
-   NAVBAR STYLES — Floating Pill Design
+   NAVBAR — Clean, editorial, website-feel
+   Pedal Juara · Human · Minimal
    ============================================ */
 
-/* Outer wrapper: transparent, just positions the pill */
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 14px 24px;
-  transition: padding 0.3s ease;
+  background: rgba(248, 247, 242, 0.97);
+  border-bottom: 1.5px solid #DDD8CC;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: box-shadow 0.25s ease;
 }
 
 .navbar--scrolled {
-  padding: 10px 24px;
+  box-shadow: 0 2px 16px rgba(23, 50, 77, 0.07);
 }
 
-/* The pill itself */
 .navbar__inner {
-  max-width: 960px;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 8px 12px 8px 20px;
-  height: 60px;
+  padding: 0 24px;
+  height: 72px;
   display: flex;
   align-items: center;
-  gap: 8px;
-
-  /* Floating pill */
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 100px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14), 0 1px 6px rgba(74, 173, 232, 0.2);
-  transition: all 0.3s ease;
-}
-
-.navbar--scrolled .navbar__inner {
-  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(74, 173, 232, 0.25);
+  gap: 0;
 }
 
 /* Logo */
 .navbar__logo {
   display: flex;
   align-items: center;
-  gap: 50px;
   flex-shrink: 0;
-}
-
-.navbar__logo-icon {
-  width: 100px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  margin-right: auto;
 }
 
 .navbar__logo-img {
-  width: 170px;
-  height: 48px;
+  width: 148px;
+  height: 42px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(255, 107, 43, 0.25));
-}
-
-.navbar__logo-text {
-  display: flex;
-  gap: 4px;
-  line-height: 1;
-  font-family: 'Poppins', sans-serif;
-}
-
-.navbar__logo-pedal {
-  font-size: 18px;
-  color: #E8302A;
-  letter-spacing: 0.5px;
-}
-
-.navbar__logo-juara {
-  font-size: 18px;
-  color: #3DB54A;
-  letter-spacing: 0.5px;
 }
 
 /* Nav Links */
@@ -88,47 +49,57 @@
   display: flex;
   list-style: none;
   gap: 2px;
-  margin-left: auto;
+  margin: 0;
+  padding: 0;
 }
 
 .navbar__link {
   display: block;
-  padding: 7px 13px;
-  border-radius: 100px;
+  padding: 6px 14px;
+  border-radius: 6px;
   font-size: 14px;
-  font-weight: 700;
-  color: #1A2E4A;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  color: #17324D;
+  transition: all 0.18s ease;
   white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
 }
 
-.navbar__link:hover,
+.navbar__link:hover {
+  color: #1464A5;
+  background: rgba(20, 100, 165, 0.06);
+}
+
 .navbar__link--active {
-  background: linear-gradient(135deg, #4AADE8 0%, #3DB54A 100%);
-  color: white;
-  transform: translateY(-1px);
+  color: #1464A5;
+  font-weight: 700;
+  background: rgba(20, 100, 165, 0.08);
 }
 
-/* Search Button */
+/* Search Button — small icon */
 .navbar__search {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2D7DD2 0%, #4AADE8 100%);
-  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1.5px solid #DDD8CC;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-left: 4px;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(45, 125, 210, 0.35);
+  transition: all 0.18s ease;
+  color: #718096;
 }
 
 .navbar__search:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 18px rgba(45, 125, 210, 0.5);
+  border-color: #1464A5;
+  color: #1464A5;
+  background: rgba(20, 100, 165, 0.05);
+}
+
+.navbar__search svg {
+  stroke: currentColor;
 }
 
 /* Hamburger */
@@ -139,73 +110,263 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
+  margin-left: auto;
 }
 
 .navbar__hamburger span {
   display: block;
   width: 22px;
-  height: 2.5px;
-  background: #1A2E4A;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  height: 2px;
+  background: #17324D;
+  border-radius: 2px;
+  transition: all 0.25s ease;
 }
 
-/* Mobile Menu — appears below the pill */
+.navbar__hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.navbar__hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar__hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile Menu */
 .navbar__mobile-menu {
-  max-width: 960px;
-  margin: 8px auto 0;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 12px 16px;
+  background: rgba(248, 247, 242, 0.98);
+  border-top: 1px solid #DDD8CC;
+  padding: 12px 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  gap: 2px;
 }
 
 .navbar__mobile-link {
-  padding: 10px 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  color: #1A2E4A;
-  transition: all 0.2s;
+  padding: 11px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #17324D;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.18s;
 }
 
-.navbar__mobile-link:hover {
-  background: linear-gradient(135deg, #4AADE8 0%, #3DB54A 100%);
-  color: white;
+.navbar__mobile-link:hover,
+.navbar__mobile-link.active {
+  background: rgba(20, 100, 165, 0.08);
+  color: #1464A5;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 10px 16px;
+  .navbar__links {
+    display: none;
   }
 
-  .navbar__links {
+  .navbar__search-wrap {
     display: none;
   }
 
   .navbar__hamburger {
     display: flex;
-    margin-left: auto;
-  }
-
-  .navbar__search {
-    order: 3;
   }
 }
 
-@media (max-width: 480px) {
-  .navbar__logo-text {
-    flex-direction: column;
-    gap: 0;
-  }
+/* ============================================
+   SEARCH — tombol + panel hasil
+   ============================================ */
 
-  .navbar__logo-pedal,
-  .navbar__logo-juara {
-    font-size: 14px;
-  }
+.navbar__search-wrap {
+  position: relative;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.navbar__search--open {
+  border-color: #1464A5;
+  color: #1464A5;
+  background: rgba(20, 100, 165, 0.05);
+}
+
+.navbar__search-panel {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  background: #FBFAF6;
+  border: 1.5px solid #DDD8CC;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(23, 50, 77, 0.12);
+  overflow: hidden;
+  animation: navbar-search-in 0.16s ease-out;
+}
+
+@keyframes navbar-search-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.navbar__search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  height: 50px;
+  border-bottom: 1.5px solid #DDD8CC;
+  color: #718096;
+}
+
+.navbar__search-field svg {
+  flex-shrink: 0;
+}
+
+.navbar__search-field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #17324D;
+}
+
+.navbar__search-field input::placeholder {
+  color: #9AA3AE;
+  font-weight: 400;
+}
+
+.navbar__search-field:focus-within {
+  color: #1464A5;
+}
+
+.navbar__search-clear {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23, 50, 77, 0.07);
+  color: #17324D;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.navbar__search-clear:hover {
+  background: rgba(23, 50, 77, 0.14);
+}
+
+.navbar__search-results {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.navbar__search-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.navbar__search-item.is-active {
+  background: rgba(20, 100, 165, 0.08);
+}
+
+.navbar__search-item-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.navbar__search-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #17324D;
+}
+
+.navbar__search-item.is-active .navbar__search-item-title {
+  color: #1464A5;
+}
+
+.navbar__search-item-title mark {
+  background: rgba(20, 100, 165, 0.16);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.navbar__search-item-desc {
+  font-size: 12px;
+  color: #718096;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar__search-item-type {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #718096;
+  border: 1px solid #DDD8CC;
+  border-radius: 20px;
+  padding: 2px 9px;
+}
+
+.navbar__search-empty {
+  padding: 20px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #718096;
+}
+
+.navbar__search-hint {
+  display: flex;
+  gap: 14px;
+  padding: 8px 14px;
+  border-top: 1px solid #DDD8CC;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: #9AA3AE;
+}
+
+/* Mobile: kolom pencarian di dalam menu */
+.navbar__search-field--mobile {
+  border: 1.5px solid #DDD8CC;
+  border-radius: 8px;
+  height: 44px;
+  margin-bottom: 8px;
+  background: #FBFAF6;
+}
+
+.navbar__mobile-menu .navbar__search-results {
+  padding: 0;
+  max-height: 50vh;
+}
+
+.navbar__mobile-menu .navbar__search-hint {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar__search-panel { animation: none; }
 }
