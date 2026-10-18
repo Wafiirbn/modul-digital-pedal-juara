@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NavbarSearch from './NavbarSearch';
 import './Navbar.css';
+import './NavbarPill.css';
 
 const navLinks = [
   { id: 'modulku', label: 'Modulku', href: '#modulku' },
