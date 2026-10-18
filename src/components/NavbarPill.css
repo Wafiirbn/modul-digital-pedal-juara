@@ -1,0 +1,57 @@
+/* Navbar bentuk pill melayang — taruh SETELAH Navbar.css
+   (di Navbar.jsx: import './Navbar.css'; lalu import './NavbarPill.css';) */
+
+.navbar {
+  top: 14px;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(1200px, calc(100% - 32px));
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 6px 24px rgba(23, 50, 77, 0.10);
+  overflow: hidden;
+}
+
+.navbar--scrolled {
+  box-shadow: 0 8px 28px rgba(23, 50, 77, 0.16);
+}
+
+.navbar__inner {
+  max-width: none;
+  height: 76px;
+  padding: 0 30px;
+}
+
+.navbar__logo-img {
+  width: 170px;
+  height: 48px;
+}
+
+.navbar__links {
+  gap: 8px;
+}
+
+.navbar__link {
+  padding: 8px 18px;
+  font-size: 16px;
+  border-radius: 999px;
+}
+
+.navbar__mobile-menu {
+  background: transparent;
+  border-top: 1px solid #EEF0F2;
+}
+
+/* Saat menu mobile terbuka, sudut tidak terlalu bulat */
+@media (max-width: 768px) {
+  .navbar {
+    border-radius: 36px;
+  }
+
+  .navbar__inner {
+    height: 68px;
+    padding: 0 20px;
+  }
+}
