@@ -13,35 +13,35 @@ const partners = [
     id: 'akademik',
     kategori: 'Akademik',
     nama: 'SMK Al-Muttaqin',
-    logo: '/partners/logo-akademik.png',   // ← ganti nama file sesuai gambarmu
+    logo: './logo-akademik.png',   // ← ganti nama file sesuai gambarmu
     alt: 'Logo SMK Al-Muttaqin',
   },
   {
     id: 'pemerintahan',
     kategori: 'Pemerintahan',
     nama: 'DP3A Kota Bekasi',
-    logo: '/partners/logo-pemerintahan.png', // ← ganti nama file sesuai gambarmu
+    logo: './logo-pemerintahan.png', // ← ganti nama file sesuai gambarmu
     alt: 'Logo DP3A Kota Bekasi',
   },
   {
     id: 'komunitas',
     kategori: 'Komunitas',
     nama: 'Komunitas Literasi Tambun Selatan & Forum Anak Kabupaten Bekasi',
-    logo: '/partners/logo-komunitas.png',   // ← ganti nama file sesuai gambarmu
+    logo: './logo-komunitas.png',   // ← ganti nama file sesuai gambarmu
     alt: 'Logo Komunitas Literasi',
   },
   {
     id: 'bisnis',
     kategori: 'Bisnis',
     nama: 'Rabeads',
-    logo: '/partners/logo-bisnis.png',      // ← ganti nama file sesuai gambarmu
+    logo: './logo-bisnis.png',      // ← ganti nama file sesuai gambarmu
     alt: 'Logo Rabeads',
   },
   {
     id: 'media',
     kategori: 'Media',
     nama: 'BEM-KM IPB & 14 Media Publikasi',
-    logo: '/partners/logo-media.png',       // ← ganti nama file sesuai gambarmu
+    logo: './logo-media.png',       // ← ganti nama file sesuai gambarmu
     alt: 'Logo Media',
   },
 ];
