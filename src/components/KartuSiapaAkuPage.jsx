@@ -207,7 +207,7 @@ const seligmanDeck = [
   {
     id: 's1',
     title: 'Kebaikan Hati (Kindness)',
-    category: 'Kebijakan Kemanusiaan',
+    category: 'Kebajikan Kemanusiaan',
     icon: GameSVG.heart,
     color: '#EC4899',
     description: 'Suka menolong, peduli pada sesama, dan menjaga perasaan teman.',
@@ -216,7 +216,7 @@ const seligmanDeck = [
   {
     id: 's2',
     title: 'Keberanian (Bravery)',
-    category: 'Kebijakan Keberanian',
+    category: 'Kebajikan Keberanian',
     icon: GameSVG.lion,
     color: '#E8302A',
     description: 'Tangguh menghadapi rintangan dan berani membela kebenaran.',
@@ -225,7 +225,7 @@ const seligmanDeck = [
   {
     id: 's3',
     title: 'Kreativitas (Creativity)',
-    category: 'Kebijakan Kebijaksanaan',
+    category: 'Kebajikan Kebijaksanaan',
     icon: GameSVG.palette,
     color: '#9B51E0',
     description: 'Menciptakan ide baru dan mengubah barang bekas menjadi karya.',
@@ -234,7 +234,7 @@ const seligmanDeck = [
   {
     id: 's4',
     title: 'Kerja Sama (Teamwork)',
-    category: 'Kebijakan Keadilan',
+    category: 'Kebajikan Keadilan',
     icon: GameSVG.team,
     color: '#3DB54A',
     description: 'Rukun dalam kelompok, merangkul semua teman, dan adil.',
@@ -242,8 +242,8 @@ const seligmanDeck = [
   },
   {
     id: 's5',
-    title: 'Kebijaksanaan (Leadership)',
-    category: 'Kebijakan Kepemimpinan',
+    title: 'Kepemimpinan (Leadership)',
+    category: 'Kebajikan Keadilan',
     icon: GameSVG.compass,
     color: '#2D7DD2',
     description: 'Mengambil keputusan tenang dan memberikan solusi yang adil.',
@@ -252,13 +252,33 @@ const seligmanDeck = [
   {
     id: 's6',
     title: 'Kegigihan (Perseverance)',
-    category: 'Kebijakan Keteguhan',
+    category: 'Kebajikan Keberanian',
     icon: GameSVG.rocket,
     color: '#F59E0B',
     description: 'Pantang menyerah saat gagal dan selalu bersemangat mencoba.',
     actionTip: 'Jika eksperimenmu gagal, coba lagi dengan cara yang berbeda!'
   }
 ];
+
+/* Ikon tambahan (tab & bintang) */
+const DrawIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="5" y="3" width="14" height="18" rx="3" />
+    <path d="M12 8.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" />
+  </svg>
+);
+const CollectionIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="3" width="8" height="8" rx="2" /><rect x="13" y="3" width="8" height="8" rx="2" />
+    <rect x="3" y="13" width="8" height="8" rx="2" /><rect x="13" y="13" width="8" height="8" rx="2" />
+  </svg>
+);
+const StarIcon = ({ filled }) => (
+  <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"
+    fill={filled ? '#FBBF24' : '#ffffff'} stroke={filled ? '#F59E0B' : '#00d2ff'} strokeWidth="2" strokeLinejoin="round">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
 
 const scoreLabels = [
   ['bravery', 'Berani', GameSVG.lion],
@@ -271,6 +291,14 @@ const scoreLabels = [
 
 const emptyScores = { bravery: 0, kindness: 0, creativity: 0, teamwork: 0, leadership: 0, resilience: 0 };
 
+const tabDescriptions = {
+  draw: 'Tarik kartu misi, pilih tindakan juaramu, dan temukan karakter yang paling cocok denganmu.',
+  deck: 'Kenali kekuatan karakter juara satu per satu, lalu coba aksi nyatanya hari ini.',
+};
+
+/* Nomor misi sudah ditampilkan di "Misi n dari 5", jadi dibuang dari judul kartu */
+const cleanMissionTitle = (t) => t.replace(/^Kartu Misi \d+:\s*/, '');
+
 export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
   const [activeTab, setActiveTab] = useState('draw'); // 'draw' | 'deck'
 
@@ -281,6 +309,8 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
   const [scores, setScores] = useState(emptyScores);
   const [gameFinished, setGameFinished] = useState(false);
   const [resultProfile, setResultProfile] = useState(null);
+  const [alsoProfiles, setAlsoProfiles] = useState([]);
+  const [finalScores, setFinalScores] = useState(emptyScores);
   const drawTimer = useRef(null);
 
   // Deck state
@@ -303,15 +333,13 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
       setCurrentDrawIdx(currentDrawIdx + 1);
       handleDrawCard();
     } else {
-      let topProfile = 'kindness';
-      let maxScore = -1;
-      Object.keys(newScores).forEach(key => {
-        if (newScores[key] > maxScore) {
-          maxScore = newScores[key];
-          topProfile = key;
-        }
-      });
-      setResultProfile(characterProfiles[topProfile]);
+      // Skor seri dipilih acak agar tidak selalu menguntungkan karakter yang sama
+      const max = Math.max(...Object.values(newScores));
+      const tied = Object.keys(newScores).filter(k => newScores[k] === max);
+      const chosen = tied[Math.floor(Math.random() * tied.length)];
+      setResultProfile(characterProfiles[chosen]);
+      setAlsoProfiles(tied.filter(k => k !== chosen).map(k => characterProfiles[k]));
+      setFinalScores(newScores);
       setGameFinished(true);
     }
   };
@@ -322,6 +350,8 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
     setScores(emptyScores);
     setGameFinished(false);
     setResultProfile(null);
+    setAlsoProfiles([]);
+    setFinalScores(emptyScores);
   };
 
   const toggleFlip = (id) => {
@@ -330,14 +360,27 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
 
   const mission = missionCards[currentDrawIdx];
 
+  const renderPower = (values, title) => (
+    <div className="ks-power">
+      <h3 className="ks-power__title">{title}</h3>
+      <ul className="ks-power__grid">
+        {scoreLabels.map(([key, label, icon]) => (
+          <li key={key} className={`ks-power__chip${values[key] > 0 ? ' ks-power__chip--on' : ''}`}>
+            <span className="ks-power__icon">{icon}</span>
+            <span className="ks-power__label">{label}</span>
+            <span className="ks-power__count">{values[key]}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
     <div className="ks-page">
       {/* ── Header ── */}
-      <header className="ks-header">
+      <div className="ks-header">
         <h1 className="ks-header__title">Kartu Siapa Aku?</h1>
-        <p className="ks-header__desc">
-          Tarik kartu misi, pilih tindakan juaramu, dan temukan karakter yang paling cocok denganmu.
-        </p>
+        <p className="ks-header__desc">{tabDescriptions[activeTab]}</p>
 
         <div className="ks-tabs" role="group" aria-label="Mode permainan">
           <button
@@ -347,7 +390,7 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
             onClick={() => setActiveTab('draw')}
             id="tab-draw-game"
           >
-            {GameSVG.draw} Tarik Kartu Misi
+            <DrawIcon /> Tarik Kartu Misi
           </button>
           <button
             type="button"
@@ -356,26 +399,24 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
             onClick={() => setActiveTab('deck')}
             id="tab-deck-game"
           >
-            {GameSVG.cards} Kartu Karakter
+            <CollectionIcon /> Kartu Karakter
           </button>
         </div>
-      </header>
+      </div>
 
-      <main className="ks-content">
+      <div className="ks-content">
 
         {/* ═════ MODE 1: TARIK KARTU MISI ═════ */}
         {activeTab === 'draw' && !gameFinished && (
           <div className="ks-draw">
-            <section className="ks-stage" aria-label="Kartu misi">
+            <div className="ks-stage">
               <div className="ks-progress">
                 <span className="ks-progress__text" aria-live="polite">
                   Misi {currentDrawIdx + 1} dari {missionCards.length}
                 </span>
-                <span className="ks-stars" aria-label={`Bintang karakter: ${stars}`}>
+                <span className="ks-stars" role="img" aria-label={`Bintang karakter: ${stars} dari ${missionCards.length}`}>
                   {Array.from({ length: missionCards.length }).map((_, i) => (
-                    <span key={i} className={`ks-star${i < stars ? ' ks-star--earned' : ''}`}>
-                      {GameSVG.star}
-                    </span>
+                    <StarIcon key={i} filled={i < stars} />
                   ))}
                 </span>
               </div>
@@ -385,18 +426,19 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
                 <div className="ks-stack__back ks-stack__back--2" aria-hidden="true" />
                 <article className="ks-mission">
                   <div className="ks-mission__top">
-                    <span className="ks-pill ks-pill--cyan">Tantangan {currentDrawIdx + 1}</span>
+                    <span className="ks-pill ks-pill--cyan">Kartu misi</span>
                     <span className="ks-mission__brand">Pedal Juara</span>
                   </div>
-                  <h2 className="ks-mission__title">{mission.title}</h2>
+                  <h2 className="ks-mission__title">{cleanMissionTitle(mission.title)}</h2>
                   <p className="ks-mission__scenario">{mission.scenario}</p>
+                  <p className="ks-mission__foot">Pilih satu tindakan juaramu.</p>
                 </article>
               </div>
-            </section>
+            </div>
 
-            <section className="ks-panel" aria-labelledby="ks-options-title">
-              <h2 id="ks-options-title" className="ks-panel__title">Apa tindakan juaramu?</h2>
-              <p className="ks-panel__sub">Pilih satu langkah. Pilihanmu menentukan karakter akhirmu.</p>
+            <div className="ks-panel">
+              <h2 className="ks-panel__title">Apa tindakan juaramu?</h2>
+              <p className="ks-panel__sub">Pilihanmu menentukan karakter akhirmu.</p>
 
               <div className="ks-options">
                 {mission.options.map((opt, idx) => (
@@ -411,20 +453,11 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
                   </button>
                 ))}
               </div>
+            </div>
 
-              <div className="ks-power">
-                <h3 className="ks-power__title">Papan kekuatan sementara</h3>
-                <ul className="ks-power__grid">
-                  {scoreLabels.map(([key, label, icon]) => (
-                    <li key={key} className={`ks-power__chip${scores[key] > 0 ? ' ks-power__chip--on' : ''}`}>
-                      <span className="ks-power__icon">{icon}</span>
-                      <span className="ks-power__label">{label}</span>
-                      <span className="ks-power__count">{scores[key]}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
+            <div className="ks-board">
+              {renderPower(scores, 'Papan kekuatan sementara')}
+            </div>
           </div>
         )}
 
@@ -440,19 +473,26 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
               <p className="ks-result__tagline">{resultProfile.tagline}</p>
             </div>
 
+            {alsoProfiles.length > 0 && (
+              <p className="ks-result__also">
+                Skormu seimbang! Kamu juga kuat sebagai{' '}
+                <strong>{alsoProfiles.map(p => p.title).join(' dan ')}</strong>.
+              </p>
+            )}
+
             <div className="ks-result__grid">
-              <section className="ks-result__box">
+              <div className="ks-result__box">
                 <h3>Gambaran karaktermu</h3>
                 <p>{resultProfile.description}</p>
-              </section>
-              <section className="ks-result__box">
+              </div>
+              <div className="ks-result__box">
                 <h3>Kekuatan utamamu</h3>
                 <ul className="ks-result__list">
                   {resultProfile.strengths.map((s, i) => (
                     <li key={i}>{GameSVG.check}<span>{s}</span></li>
                   ))}
                 </ul>
-              </section>
+              </div>
             </div>
 
             <div className="ks-result__tip">
@@ -460,12 +500,16 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
               <p>{resultProfile.tip}</p>
             </div>
 
+            <div className="ks-result__scores">
+              {renderPower(finalScores, 'Skor kekuatanmu')}
+            </div>
+
             <div className="ks-result__actions">
               <button type="button" className="ks-btn ks-btn--primary" onClick={resetGame}>
                 {GameSVG.refresh} Main lagi
               </button>
               <button type="button" className="ks-btn ks-btn--outline" onClick={() => setActiveTab('deck')}>
-                {GameSVG.cards} Lihat kartu karakter
+                <CollectionIcon /> Lihat kartu karakter
               </button>
               {onNavigateToModulku && (
                 <button type="button" className="ks-btn ks-btn--text" onClick={onNavigateToModulku}>
@@ -478,8 +522,8 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
 
         {/* ═════ MODE 2: KARTU KARAKTER ═════ */}
         {activeTab === 'deck' && (
-          <section className="ks-deck" aria-labelledby="ks-deck-title">
-            <h2 id="ks-deck-title" className="ks-deck__title">Kartu Karakter Juara</h2>
+          <div className="ks-deck">
+            <h2 className="ks-deck__title">Kartu Karakter Juara</h2>
             <p className="ks-deck__desc">Ketuk kartu untuk membaliknya dan baca aksi nyata yang bisa kamu lakukan.</p>
 
             <div className="ks-deck__grid">
@@ -491,19 +535,21 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
                     key={card.id}
                     className={`ks-flip${isFlipped ? ' ks-flip--flipped' : ''}`}
                     aria-pressed={isFlipped}
-                    aria-label={`${card.title}. ${isFlipped ? 'Sisi belakang terbuka' : 'Ketuk untuk membalik kartu'}`}
                     onClick={() => toggleFlip(card.id)}
                     style={{ '--ks-accent': card.color }}
                   >
                     <span className="ks-flip__inner">
-                      <span className="ks-flip__face ks-flip__front">
+                      <span className="ks-flip__face ks-flip__front" aria-hidden={isFlipped}>
                         <span className="ks-pill ks-pill--cyan">{card.category}</span>
                         <span className="ks-flip__icon">{card.icon}</span>
                         <span className="ks-flip__name">{card.title}</span>
                         <span className="ks-flip__hint">Ketuk untuk membalik</span>
                       </span>
-                      <span className="ks-flip__face ks-flip__back">
-                        <span className="ks-flip__back-title">{card.title}</span>
+                      <span className="ks-flip__face ks-flip__back" aria-hidden={!isFlipped}>
+                        <span className="ks-flip__back-head">
+                          <span className="ks-flip__icon ks-flip__icon--sm">{card.icon}</span>
+                          <span className="ks-flip__back-title">{card.title}</span>
+                        </span>
                         <span className="ks-flip__desc">{card.description}</span>
                         <span className="ks-flip__action">
                           <strong>Aksi nyata</strong>
@@ -515,9 +561,9 @@ export default function KartuSiapaAkuPage({ onNavigateToModulku }) {
                 );
               })}
             </div>
-          </section>
+          </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }
