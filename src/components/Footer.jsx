@@ -4,7 +4,7 @@ import './Footer.css';
 export default function Footer({ onNavigate }) {
   const handleLinkClick = (e, href) => {
     if (href.startsWith('http')) return;
-    
+
     e.preventDefault();
     if (href === '#modulku') {
       if (onNavigate) onNavigate('modulku');
@@ -30,7 +30,7 @@ export default function Footer({ onNavigate }) {
             </a>
           </div>
           <p className="footer__tagline">
-            Modul Digital Edukasi Karakter Anak Indonesia
+            <b>Modul Digital</b> Penguatan Karakter dan Kewirausahaan Anak Pemulung Melalui Metode Berbasis Pengalaman untuk <b>Menurunkan Angka Putus Sekolah</b> Adisa Bantargebang
           </p>
         </div>
 
@@ -51,7 +51,7 @@ export default function Footer({ onNavigate }) {
           <div className="footer__col">
             <p className="footer__col-title">Kontak</p>
             <a href="mailto:pedaljuaraa@gmail.com" className="footer__link">pedaljuaraa@gmail.com</a>
-            <p className="footer__link footer__link--text">Instagram: @pedaljuara</p>
+            <a href="https://www.instagram.com/pedaljuara/" target="_blank" rel="noreferrer" className="footer__link footer__link--text">Instagram: @pedaljuara</a>
           </div>
         </div>
       </div>
